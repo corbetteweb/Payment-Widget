@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Component Demo</title>
+  <script type="module" src="./payment-component.js"></script>
+</head>
+<body>
+  <h1>Payment Component Demo</h1>
+  <payment-card-form></payment-card-form>
+
+  <script>
+    const paymentForm = document.querySelector("payment-card-form");
+    paymentForm.addEventListener("payment-valid", e => {
+      console.log("Secure token:", e.detail.token);
+      console.log("Payment is valid! Token generated. Check console for token.");
+    });
+  </script>
+</body>
+</html>

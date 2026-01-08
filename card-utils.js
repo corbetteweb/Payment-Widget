@@ -13,13 +13,14 @@ export function formatCardNumber(value) {
  * @param {string} value
  * @returns {string} - Visa, Mastercard, Amex, etc.
  */
+
 export function detectCardBrand(value) {
   const num = value.replace(/\D/g, "");
-  if (/^4/.test(num)) return "Visa";
-  if (/^5[1-5]/.test(num)) return "Mastercard";
-  if (/^3[47]/.test(num)) return "Amex";
-  if (/^6(?:011|5)/.test(num)) return "Discover";
-  return "Unknown";
+  if (/^4/.test(num)) return { name: "Visa", icon: "💳" };
+  if (/^5[1-5]/.test(num)) return { name: "Mastercard", icon: "💳" };
+  if (/^3[47]/.test(num)) return { name: "Amex", icon: "🟦" };
+  if (/^6(?:011|5)/.test(num)) return { name: "Discover", icon: "🟧" };
+  return { name: "Unknown", icon: "❔" };
 }
 
 /**

@@ -1,5 +1,3 @@
-// card-utils.js
-
 /**
  * Format card number with spaces
  * e.g., 4242424242424242 -> 4242 4242 4242 4242

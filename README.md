@@ -38,3 +38,11 @@ Customization & Theming
 •   Matches host application look and feel.
 
 * Accessibility (a11y)
+
+payment-component/
+│
+├─ index.html            # Demo page
+├─ payment-component.js  # Main component
+├─ validation.js         # Field validation logic
+├─ card-utils.js         # Card formatting, brand detection, token generation
+└─ dummy-api.js          # Dummy backend API

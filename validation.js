@@ -1,46 +1,63 @@
-// validation.js
-
 /**
  * Luhn algorithm to validate card numbers
- * @param {string} number
+ * @param {string} num - card number digits only
  * @returns {boolean}
  */
-export function luhn(number) {
+function luhnCheck(num) {
   let sum = 0;
-  let alt = false;
-  for (let i = number.length - 1; i >= 0; i--) {
-    let n = parseInt(number[i], 10);
-    if (alt) {
-      n *= 2;
-      if (n > 9) n -= 9;
+  let shouldDouble = false;
+  // iterate from right to left
+  for (let i = num.length - 1; i >= 0; i--) {
+    let digit = parseInt(num[i], 10);
+    if (shouldDouble) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
     }
-    sum += n;
-    alt = !alt;
+    sum += digit;
+    shouldDouble = !shouldDouble;
   }
-  return number.length > 0 && sum % 10 === 0;
+  return sum % 10 === 0;
 }
 
 /**
- * Validate a single field by type
- * @param {string} id - input id
- * @param {string} value - input value
- * @returns {string} - error message (empty if valid)
+ * Validate a single field
+ * @param {string} field - id of input
+ * @param {string} value - current input value
+ * @returns {string|null} error message or null if valid
  */
-export function validateField(id, value) {
-  value = value.trim();
-  switch (id) {
+export function validateField(field, value) {
+  const trimmed = value.trim();
+
+  switch (field) {
     case "card":
-      if (!luhn(value)) return "Invalid card number";
-      break;
+      const digits = trimmed.replace(/\s+/g, ""); // remove spaces
+      if (!digits) return "Card number is required.";
+      if (!/^\d{13,19}$/.test(digits)) return "Card number must be 13–19 digits.";
+      if (!luhnCheck(digits)) return "Invalid card number.";
+      return null;
+
     case "exp":
-      if (!/^\d{2}\/\d{2}$/.test(value)) return "Use MM/YY format";
-      break;
+      if (!trimmed) return "Expiration date is required.";
+      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(trimmed)) return "Expiration must be MM/YY.";
+      const [month, year] = trimmed.split("/").map(Number);
+      const now = new Date();
+      const currentYear = now.getFullYear() % 100;
+      const currentMonth = now.getMonth() + 1;
+      if (year < currentYear || (year === currentYear && month < currentMonth)) {
+        return "Card has expired.";
+      }
+      return null;
+
     case "cvc":
-      if (!/^\d{3,4}$/.test(value)) return "Invalid CVC";
-      break;
+      if (!trimmed) return "CVC is required.";
+      if (!/^\d{3,4}$/.test(trimmed)) return "CVC must be 3 or 4 digits.";
+      return null;
+
     case "postal":
-      if (value.length < 3) return "Invalid postal code";
-      break;
+      if (!trimmed) return "Postal code is required.";
+      return null;
+
+    default:
+      return null;
   }
-  return "";
 }

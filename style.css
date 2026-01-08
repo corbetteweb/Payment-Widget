@@ -1,3 +1,12 @@
 payment-card-form {
   --primary-color: #0070f3;
+    --error-color: #ff0000;
+    --font-family: Arial, sans-serif;
+    --input-border-color: #ccc;
+    --input-focus-border-color: var(--primary-color);
+    --input-padding: 10px;
+    --input-font-size: 16px;
+    --label-font-size: 14px;
+    --label-color: #333;
+    --button-background-color: var(--primary-color);
 }

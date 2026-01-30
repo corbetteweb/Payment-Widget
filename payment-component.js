@@ -7,6 +7,7 @@ class PaymentCardForm extends HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
     this.cardBrandEl = null;
+    this.currentCardBrand = { name: "", icon: "" };
   }
 
   connectedCallback() {
@@ -96,6 +97,20 @@ class PaymentCardForm extends HTMLElement {
   button:hover {
     background: var(--payment-button-hover-bg, #4f47e0);
   }
+
+  .card-brand {
+    position:absolute;
+    right:10px;
+    top:38px;
+    font-size:14px;
+    display:flex;
+    align-items:center;
+    gap:4px;
+}
+
+  #exp, #cvc {
+    font-family: monospace;
+}
 </style>
 
 
@@ -136,16 +151,40 @@ class PaymentCardForm extends HTMLElement {
 
   bindEvents() {
     const form = this.shadowRoot.querySelector("form");
-    const inputs = this.shadowRoot.querySelectorAll("input");
     const cardInput = this.shadowRoot.querySelector("#card");
+    const expInput = this.shadowRoot.querySelector("#exp");
+    const cvcInput = this.shadowRoot.querySelector("#cvc");
 
     // Card formatting & brand detection
     cardInput.addEventListener("input", e => {
       const formatted = formatCardNumber(e.target.value);
       e.target.value = formatted;
-      this.cardBrandEl.textContent = detectCardBrand(formatted);
+      const brand = detectCardBrand(formatted);
+      this.currentCardBrand = brand;
+      this.cardBrandEl.textContent = "";
+      const icon = document.createElement("span");
+      icon.textContent = brand.icon;
+      this.cardBrandEl.appendChild(icon);
+      const name = document.createElement("span");
+      name.textContent = brand.name;
+      this.cardBrandEl.appendChild(name);
     });
 
+    // Expiration auto-formatting MM/YY
+    expInput.addEventListener("input", e => {
+      let value = e.target.value.replace(/\D/g, "").slice(0, 4);
+      if (value.length >= 3) value = value.slice(0,2) + "/" + value.slice(2);
+      e.target.value = value;
+    });
+
+    // CVC auto-formatting & length
+    cvcInput.addEventListener("input", e => {
+      let maxLength = this.currentCardBrand.name === "Amex" ? 4 : 3;
+      e.target.value = e.target.value.replace(/\D/g, "").slice(0, maxLength);
+    });
+
+    // Blur validation
+    const inputs = this.shadowRoot.querySelectorAll("input");
     inputs.forEach(input => {
       input.addEventListener("blur", () => this.handleFieldValidation(input));
       input.addEventListener("input", () => this.clearFieldError(input));
